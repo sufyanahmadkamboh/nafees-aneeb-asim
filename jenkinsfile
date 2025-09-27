@@ -1,0 +1,21 @@
+pipeline {
+  agent any
+
+  environment {
+    TARGET_HOST = '18.136.210.18'   // or hostname
+    SSH_USER    = 'ubuntu'           // whatever user matches the key
+  }
+
+  stages {
+    stage('Remote sanity check') {
+      steps {
+        sshagent(credentials: ['base-server']) {
+          sh """
+            echo '${name}'
+            ssh -o StrictHostKeyChecking=no ${SSH_USER}@${TARGET_HOST} 'whoami; pwd; ip a; ls /'
+          """
+        }
+      }
+    }
+  }
+}
